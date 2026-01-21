@@ -1,0 +1,22 @@
+const express=require('express')
+const userController=require('../controller/userController')
+const bookstoreController=require('../controller/bookController')
+const jwtMiddleware=require('./../middleware/jwtMiddleware')
+const multerConfig = require('../middleware/multerMiddleware')
+const route=express.Router()
+const adminMiddleware=require('../middleware/adminMiddleware')
+route.post('/api/register',userController.userRegister)
+route.post('/api/login',userController.userLogin)
+route.post('/api/googleLogin',userController.googleLogin)
+route.post('/api/addBook',jwtMiddleware,multerConfig.array('UploadedImages',3),bookstoreController.addBook)
+route.get('/api/getBook',jwtMiddleware,bookstoreController.getBook)
+route.get('/api/getHomeBooks',bookstoreController.getHomeBook)         //No need for jwtMiddleware because it is displayed in Landing page
+route.get('/api/viewBook/:id',jwtMiddleware,bookstoreController.viewBook)
+//ADMIN SIDE GET USER, GET BOOK
+route.get('/api/getUsers',adminMiddleware,userController.getUsers)
+route.get('/api/getBook',adminMiddleware,bookstoreController.getBook)
+route.put('/api/update-admin',adminMiddleware,multerConfig.single('profile'),userController.updateAdmin)
+route.get('/api/getAdmin',adminMiddleware,userController.getAdmin)
+route.put('/api/updateUser',jwtMiddleware,multerConfig.single('profile'),userController.updateUser)
+route.put('/api/makePayment',jwtMiddleware,bookstoreController.buyBook)
+module.exports=route
